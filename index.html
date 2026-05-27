@@ -34,6 +34,9 @@
   <audio id="bgAudio" loop style="display:none;">
     <source src="https://raw.githubusercontent.com/hEIIoWorlD25/Anit/main/The%20Neighbourhood%20-%20Compass%20%28Official%20Audio%29.mp3" type="audio/mpeg">
   </audio>
+  <div id="audioPrompt" style="position:fixed;inset:0;z-index:105;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);backdrop-filter:blur(6px);">
+    <button id="audioBtn" style="padding:18px 24px;border:none;border-radius:999px;background:#ff3366;color:white;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 12px 30px rgba(0,0,0,0.25);">Toca para escuchar</button>
+  </div>
     <div id="app" style="position:fixed;inset:0;z-index:1;"></div>
   <script>
     const width = window.innerWidth;
@@ -271,22 +274,32 @@
       });
     }
 
-    // Audio simple con HTML5 - se reproduce automáticamente
+    // Audio simple con HTML5 - se juega en móvil con botón explícito
     const audio = document.getElementById('bgAudio');
     audio.volume = 0.5;
+    const audioPrompt = document.getElementById('audioPrompt');
+    const audioBtn = document.getElementById('audioBtn');
     
-    // Reproducir automáticamente sin esperar interacción
+    function startAudio() {
+      audio.play().then(() => {
+        audioPrompt.style.display = 'none';
+      }).catch(err => {
+        console.log('Error reproduciendo audio:', err);
+      });
+    }
+    
+    audioBtn.addEventListener('click', startAudio);
+    
+    // Intento de autoplay en escritorio, pero en móvil se mostrará el botón
     const playPromise = audio.play();
     if (playPromise !== undefined) {
       playPromise
         .then(() => {
+          audioPrompt.style.display = 'none';
           console.log('Audio reproduciendo automáticamente');
         })
         .catch(error => {
-          console.log('Autoplay bloqueado por el navegador, reproduciendo al primer click');
-          document.addEventListener('click', () => {
-            audio.play().catch(e => console.log('Error:', e));
-          }, { once: true });
+          console.log('Autoplay bloqueado, esperando tap móvil');
         });
     }
 
